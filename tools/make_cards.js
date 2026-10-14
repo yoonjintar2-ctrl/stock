@@ -23,26 +23,26 @@ const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>
     const m = await p.evaluate(async ([sl, og]) => {
       const H = window.__hx, i = H.RCARDS.findIndex(r => H.sl(H.rc(r)) === sl); if (i < 0) return null;
       const r = H.RCARDS[i], o = H.rc(r), mc = document.querySelector('.mc[data-i="' + i + '"]');
-      let grade = mc.querySelector('.bdg').textContent.trim(); const ty = H.RTYPE[r[0]];
+      let grade = mc.querySelector('.bdg').textContent.trim(); const ty = H.RTYPE[r[0]], name = o.s.slice(2), dark = r[0] === 13;
       if (og) { grade = og; }
-      const dark = r[0] === 13, name = o.s.slice(2), ep = (mc.querySelector('.mw') || {}).textContent || '';
+      const ep = (mc.querySelector('.mw') || {}).textContent || '';
       let st = document.getElementById('ogStage'); if (st) st.remove();
       st = document.createElement('div'); st.id = 'ogStage';
-      st.style.cssText = 'position:fixed;left:0;top:0;width:1200px;height:630px;z-index:999;overflow:hidden;display:grid;grid-template-columns:1fr 420px 1fr;align-items:center;font-family:inherit;' +
-        (dark ? 'background:radial-gradient(70% 90% at 50% 40%,#3b4048,#15181c);color:#f1f3f5' : 'background:radial-gradient(70% 90% at 50% 40%,#fff,' + ty[1] + ' 75%,' + ty[1] + ');color:#1d232a');
-      const L = document.createElement('div'); L.style.cssText = 'padding:0 30px 0 56px;display:flex;flex-direction:column;gap:14px';
-      L.innerHTML = '<img src="a/logo.webp" style="width:110px;height:110px;object-fit:contain;filter:drop-shadow(0 4px 10px rgba(0,0,0,.25))">' +
-        '<div style="font-size:40px;font-weight:900;letter-spacing:-1px;line-height:1.1">수리수리<br>진타리</div><div style="font-size:19px;font-weight:700;opacity:.7">진탈이의 돈 버는<br>마법 카드</div>';
-      const C = document.createElement('div'); C.style.cssText = 'display:flex;justify-content:center';
-      const cl = mc.cloneNode(true);
-      if (og) { const t = H.tier(og); cl.className = cl.className.replace(/\bg(S|A|Bp|B|Cp|C|Z)\b/, 'g' + t); const bd = cl.querySelector('.bdg'); bd.className = 'bdg t' + t; bd.textContent = og; } cl.style.cssText += ';zoom:2.25;width:180px;pointer-events:none;margin:0';
-      cl.querySelectorAll('img').forEach(im => im.loading = 'eager'); C.appendChild(cl);
-      const R = document.createElement('div'); R.style.cssText = 'padding:0 56px 0 34px;display:flex;flex-direction:column;gap:16px;align-items:flex-start';
-      R.innerHTML = '<div style="zoom:2.8">' + cl.querySelector('.bdg').outerHTML + '</div>' +
-        '<div style="font-size:' + (name.length > 9 ? 34 : 40) + 'px;font-weight:900;letter-spacing:-1px;line-height:1.15;word-break:keep-all">' + (dark && name.indexOf('매수 금지') < 0 ? '매수 금지<br>' : '') + name.replace(' · ', '<br>') + '</div>' +
-        '<div style="font-size:19px;font-weight:700;opacity:.75;line-height:1.4;word-break:keep-all">' + ep.trim() + '</div>' +
-        '<div style="margin-top:6px;font-size:18px;font-weight:800;padding:9px 18px;border-radius:999px;' + (dark ? 'background:#f1f3f5;color:#1d232a' : 'background:#1d232a;color:#fff') + '">카드 보러 가기 →</div>';
-      st.append(L, C, R); document.body.appendChild(st);
+      st.style.cssText = 'position:fixed;left:0;top:0;width:1200px;height:630px;z-index:999;overflow:hidden;font-family:inherit;' +
+        (dark ? 'background:radial-gradient(80% 100% at 30% 30%,#3b4048,#15181c);color:#f1f3f5' : 'background:radial-gradient(80% 100% at 30% 30%,#fff,' + ty[1] + ' 75%,' + ty[1] + ');color:#1d232a');
+      const o2 = Object.assign({}, o); if (og) o2.g = og;
+      const C = document.createElement('div'); C.style.cssText = 'position:absolute;left:44px;top:30px;width:420px;zoom:1.42;pointer-events:none';
+      C.innerHTML = H.card(o2); C.querySelectorAll('img').forEach(im => im.loading = 'eager');
+      const tc = C.querySelector('.tc'); tc.style.margin = '0';
+      const big = r[1], kn = r[2], bl = big.length;
+      const R = document.createElement('div'); R.style.cssText = 'position:absolute;left:676px;right:44px;top:0;bottom:0;display:flex;flex-direction:column;justify-content:center;gap:14px;align-items:flex-start';
+      R.innerHTML = '<div style="display:flex;align-items:center;gap:10px;font-size:22px;font-weight:900;opacity:.85"><img src="a/logo.webp" style="width:44px;height:44px;object-fit:contain">수리수리진타리</div>' +
+        '<div style="zoom:1.9">' + H.badge(o2.g, 1, dark ? 'Z' : H.tier(o2.g)) + '</div>' +
+        '<div style="font-size:' + (bl <= 4 ? 112 : bl <= 6 ? 90 : 70) + 'px;font-weight:900;letter-spacing:-2px;line-height:1">' + big + '</div>' +
+        '<div style="font-size:28px;font-weight:800;opacity:.7;margin-top:-4px">' + kn + '</div>' +
+        '<div style="font-size:30px;font-weight:900;letter-spacing:-.5px;line-height:1.2;word-break:keep-all">' + (dark && name.indexOf('매수 금지') < 0 ? '⛔ 매수 금지 · ' : '') + o.s.charAt(0) + ' ' + name + '</div>' +
+        '<div style="margin-top:6px;font-size:20px;font-weight:800;padding:10px 20px;border-radius:999px;' + (dark ? 'background:#f1f3f5;color:#1d232a' : 'background:#1d232a;color:#fff') + '">카드 보러 가기 →</div>';
+      st.append(C, R); document.body.appendChild(st);
       await Promise.all([...st.querySelectorAll('img')].map(im => im.complete ? 1 : new Promise(res => { im.onload = im.onerror = res; })));
       return { grade, name, dark, ep: ep.trim(), why: r[11] || r[15] || '', tick: r[1] };
     }, [sl, og]);
