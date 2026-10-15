@@ -14,7 +14,7 @@ const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>
   const b = await chromium.launch();
   const p = await b.newPage({ viewport: { width: 1200, height: 630 }, deviceScaleFactor: 1 });
   p.on('pageerror', e => console.log('ERR', e.message));
-  await p.goto('http://localhost:8765/index.html');
+  await p.goto('http://localhost:8765/index.html'); await p.addStyleTag({ content: '.tc,.mc{transform:none!important}' });
   await p.waitForTimeout(600);
   await p.click('#bInfo'); await p.waitForTimeout(500);
   const meta = {};

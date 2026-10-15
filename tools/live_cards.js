@@ -28,7 +28,7 @@ const LIVE = 'c/live.json';
   const live = fs.existsSync(LIVE) ? JSON.parse(fs.readFileSync(LIVE, 'utf8')) : {};
   const b = await chromium.launch(); const p = await b.newPage({ viewport: { width: 1200, height: 630 } });
   p.on('pageerror', e => console.log('ERR', e.message));
-  await p.goto('http://localhost:8765/index.html'); await p.waitForTimeout(800);
+  await p.goto('http://localhost:8765/index.html'); await p.addStyleTag({ content: '.tc,.mc{transform:none!important}' }); await p.waitForTimeout(800);
   for (const c of todo) {
     const sl = slugOf(c), tk = tickOf(c);
     const m = await p.evaluate(async (c) => {
