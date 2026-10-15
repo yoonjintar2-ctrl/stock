@@ -18,7 +18,7 @@ const LIVE = 'c/live.json';
     for (const l of t.split('\n')) { if (!l) continue; try { const m = JSON.parse(l); const b = String(m.message || ''); if (b[0] !== '{') continue; const j = JSON.parse(b); if ((j.v || 0) >= 2 && m.time >= bt) { best = j; bt = m.time; btitle = m.title || ''; } } catch (e) {} }
     // 최신 매수 의견 원본을 저장소에 남김(클라우드 예약 검토가 ntfy에 직접 못 붙어서 이 파일을 읽음)
     if (best) { const LT = 'c/latest.json', old = fs.existsSync(LT) ? JSON.parse(fs.readFileSync(LT, 'utf8')) : {};
-      if (old.time !== bt) fs.writeFileSync(LT, JSON.stringify(Object.assign({ time: bt, title: btitle }, best))); }
+      if (old.ts !== bt) fs.writeFileSync(LT, JSON.stringify(Object.assign({}, best, { ts: bt, title: btitle }))); }
     const live = fs.existsSync(LIVE) ? JSON.parse(fs.readFileSync(LIVE, 'utf8')) : {};
     const todo = [];
     for (const c of (best && best.cards) || []) { const sl = slugOf(c), tk = tickOf(c); if (!sl || !tk || FIXED.includes(sl)) continue; const k = sl + '/' + tk; if (!live[k] || live[k].g !== c.g) todo.push(c); }
