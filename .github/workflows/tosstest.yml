@@ -1,0 +1,16 @@
+name: toss-reach-test
+on: workflow_dispatch
+permissions:
+  contents: write
+jobs:
+  t:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          mkdir -p c
+          { date -u; curl -s -o /dev/null -w "info %{http_code}\n" "https://wts-info-api.tossinvest.com/api/v2/stock-infos/code-or-symbol/QQQ";
+            curl -s "https://wts-info-api.tossinvest.com/api/v1/c-chart/us-s/US19990310001/day:1?count=2&useAdjustedRate=true" | head -c 300; echo;
+            curl -s -o /dev/null -w "www %{http_code}\n" "https://www.tossinvest.com/"; } > c/tosstest.txt 2>&1
+          git config user.name bot; git config user.email bot@users.noreply.github.com
+          git add c/tosstest.txt; git commit -m "toss reach test" || true; git pull --rebase -q; git push -q
