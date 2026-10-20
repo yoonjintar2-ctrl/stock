@@ -2,24 +2,18 @@ name: toss-reach-test
 on:
   workflow_dispatch:
     inputs:
-      since: {default: '2023-10-20'}
-      syms: {default: 'SOXL,TQQQ,KORU,NVDA,TSLA,AMD,PLTR,MU'}
-      from_run: {default: ''}
+      cmd: {default: 'python3 tools/day_fetch.py tools/swing_syms.txt'}
+      dir: {default: 'd1'}
+      branch: {default: 'd1data'}
 permissions:
   contents: write
-  actions: read
 jobs:
   t:
     runs-on: ubuntu-latest
     timeout-minutes: 80
     steps:
       - uses: actions/checkout@v4
-      - if: ${{ inputs.from_run == '' }}
-        run: python3 tools/min1_fetch.py "${{ inputs.since }}" "${{ inputs.syms }}"
-      - if: ${{ inputs.from_run != '' }}
-        uses: actions/download-artifact@v4
-        with: {name: m1, path: m1, run-id: '${{ inputs.from_run }}', github-token: '${{ github.token }}'}
+      - run: ${{ inputs.cmd }}
       - run: |
-          ls -la m1
-          mkdir /tmp/o && cp m1/* /tmp/o/ && cd /tmp/o && git init -q -b m1data && git add . && git -c user.name=bot -c user.email=bot@users.noreply.github.com commit -qm m1data
-          git push -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" m1data
+          mkdir /tmp/o && cp ${{ inputs.dir }}/* /tmp/o/ && cd /tmp/o && git init -q -b ${{ inputs.branch }} && git add . && git -c user.name=bot -c user.email=bot@users.noreply.github.com commit -qm data
+          git push -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" ${{ inputs.branch }}
