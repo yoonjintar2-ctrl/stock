@@ -21,8 +21,10 @@ jobs:
         with:
           node-version: 20
       - run: node tools/basis.js
+      - run: node tools/money.js
+        continue-on-error: true
       - run: |
           git config user.name "card-bot"
           git config user.email "card-bot@users.noreply.github.com"
-          git add c/basis.json
+          git add c/basis.json c/money.json 2>/dev/null; git add c/basis.json
           git diff --cached --quiet || (git commit -m "basis" && git pull --rebase && git push)

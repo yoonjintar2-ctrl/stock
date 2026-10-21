@@ -3,8 +3,8 @@
 // 사용: node tools/live_cards.js plan  → 만들 게 있으면 todo.json 쓰고 'NEED' 출력
 //       node tools/live_cards.js build → (hunter 사이트를 localhost:8765에 띄운 뒤) todo.json대로 생성, c/live.json 갱신
 const fs = require('fs'), path = require('path');
-const TOPIC = 'berry-3059012bcc6b7db9-a', FIXED = ['1','2','3','3s','5','5s','6','6s','9','9s','11','13','13s','14','c1','c2','c3','c4'];
-const CIRC = '①②③④⑤⑥⑦⑧⑨⑩⑪ⓒⓏ⑫';
+const TOPIC = 'berry-3059012bcc6b7db9-a', FIXED = ['1','2','3','3s','5','5s','6','6s','9','9s','11','13','13s','14','15','c1','c2','c3','c4'];
+const CIRC = '①②③④⑤⑥⑦⑧⑨⑩⑪ⓒⓏ⑫⑬';
 const ruleNo = s => { s = (s || '').trim(); const i = CIRC.indexOf(s.charAt(0)); return i < 0 ? 0 : i + 1; };
 const slugOf = c => { const no = ruleNo(c.s); return no ? no + (c.v ? 's' : '') : ''; };
 const tickOf = c => { const t = String((c.m === 'KR' && c.code) || (/[A-Za-z]/.test(c.n || '') ? c.n : c.code) || c.n || '').replace(/[^A-Za-z0-9]/g, ''); return t.slice(0, 24); };
@@ -35,7 +35,7 @@ const LIVE = 'c/live.json';
   for (const c of todo) {
     const sl = slugOf(c), tk = tickOf(c);
     const m = await p.evaluate(async (c) => {
-      const H = window.__hx, no = (c.s || '').trim().charAt(0), ty = H.RTYPE['①②③④⑤⑥⑦⑧⑨⑩⑪ⓒⓏ⑫'.indexOf(no) + 1] || ['#5c7cfa', '#dbe4ff'];
+      const H = window.__hx, no = (c.s || '').trim().charAt(0), ty = H.RTYPE['①②③④⑤⑥⑦⑧⑨⑩⑪ⓒⓏ⑫⑬'.indexOf(no) + 1] || ['#5c7cfa', '#dbe4ff'];
       const T = H.tier(c.g), name = (c.s || '').slice(2);
       let st = document.getElementById('ogStage'); if (st) st.remove();
       st = document.createElement('div'); st.id = 'ogStage';

@@ -4,7 +4,7 @@
 const { chromium } = require('playwright');
 const fs = require('fs'), path = require('path');
 const OUT = process.argv[2] || '.';
-const SLUGS = ['1','2','3','3s','4','4s','5','5s','6','6s','7','8','9','11','13','13s','14','c1','c2','c3','c4'];
+const SLUGS = ['1','2','3','3s','4','4s','5','5s','6','6s','7','8','9','11','13','13s','14','15','c1','c2','c3','c4'];
 // 같은 규칙이라도 실전에서 다른 등급으로 뜰 수 있는 카드는 등급별 썸네일을 따로 만든다(c/<slug>-<등급>/)
 const VAR = { '2': ['B'], '5': ['A'], '6': ['B'], '6s': ['B'], '8': ['B+'], '9': ['B'], '3': ['B'], '1': ['B'] };
 const gcode = g => g.toLowerCase().replace('+', 'p').replace('-', 'm');
