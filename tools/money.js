@@ -10,7 +10,10 @@ const fred = async (id) => { const t = await (await fetch(`https://fred.stlouisf
   return t.trim().split('\n').slice(1).map(l => l.split(',')).filter(r => r[1] && r[1] !== '.').map(r => [r[0], +r[1]]); };
 const toss = async (sym) => { const c = (await (await fetch(`${INFO}/v2/stock-infos/code-or-symbol/${sym}`, { headers: UA })).json()).result.code;
   let out = [], from = ''; for (let p = 0; p < 3; p++) { const j = await (await fetch(`${INFO}/v1/c-chart/us-s/${c}/day:1?count=400&useAdjustedRate=true` + (from ? '&from=' + encodeURIComponent(from) : ''), { headers: UA })).json(); const k = j.result.candles || []; out = k.slice().reverse().concat(out); from = j.result.nextDateTime; if (!from || k.length < 400) break; }
-  const m = {}; out.forEach(x => m[x.dt.slice(0, 10)] = x.close); return m; };
+  // 아직 안 끝난 오늘(미국 동부 16시 전) 캔들은 빼고 정규장 종가만
+  const p = Object.fromEntries(new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', hour12: false }).formatToParts(new Date()).map(x => [x.type, x.value]));
+  const et = p.year + '-' + p.month + '-' + p.day, eh = +p.hour % 24;
+  const m = {}; out.forEach(x => { const d = x.dt.slice(0, 10); if (d < et || (d === et && eh >= 16)) m[d] = x.close; }); return m; };
 const asof = (rows) => (d) => { let v = null; for (const [k, x] of rows) { if (k <= d) v = x; else break; } return v; };
 (async () => {
   const [WA, TG, RR] = await Promise.all(['WALCL', 'WTREGEN', 'RRPONTSYD'].map(fred));
