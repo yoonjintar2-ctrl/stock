@@ -1,0 +1,45 @@
+name: cloud watcher
+# 맥 대신 GitHub에서 카드 계산 감시를 계속 돌림. 한 번에 약 5시간 40분 돌고 끝나면서 다음 것을 스스로 시작.
+# 예약(2시간마다)은 혹시 끊겼을 때 다시 살리는 용도 — 이미 돌고 있으면 바로 끝남.
+# 끄려면: Actions 탭 → cloud watcher → Disable workflow (석진 2026-11-11 승인)
+on:
+  schedule:
+    - cron: '13 */2 * * *'
+  workflow_dispatch:
+    inputs:
+      run_min: {default: '340'}
+permissions:
+  contents: read
+  actions: write
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 355
+    steps:
+      - name: already running?
+        id: g
+        env: {GH_TOKEN: '${{ github.token }}'}
+        run: |
+          n=$(gh api "repos/${{ github.repository }}/actions/workflows/watch.yml/runs?status=in_progress&per_page=20" --jq "[.workflow_runs[] | select(.id != ${{ github.run_id }})] | length")
+          echo "others=$n"
+          if [ "${{ github.event_name }}" = "schedule" ] && [ "$n" -gt 0 ]; then echo "skip=1" >> "$GITHUB_OUTPUT"; fi
+      - uses: actions/checkout@v4
+        if: steps.g.outputs.skip != '1'
+      - uses: actions/setup-node@v4
+        if: steps.g.outputs.skip != '1'
+        with: {node-version: 20}
+      - name: install
+        if: steps.g.outputs.skip != '1'
+        run: |
+          mkdir -p /tmp/w && cd /tmp/w && npm init -y >/dev/null && npm i playwright@1.49.1 >/dev/null
+          npx playwright install --with-deps chromium >/dev/null
+      - name: watch
+        if: steps.g.outputs.skip != '1'
+        env:
+          RUN_MIN: ${{ inputs.run_min || '340' }}
+          NODE_PATH: /tmp/w/node_modules
+        run: node tools/cloud_watch.js
+      - name: start next
+        if: steps.g.outputs.skip != '1' && (inputs.run_min || '340') == '340'
+        env: {GH_TOKEN: '${{ github.token }}'}
+        run: gh workflow run watch.yml -R ${{ github.repository }}
