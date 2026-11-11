@@ -12,7 +12,9 @@ const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 const log = (...a) => console.log(new Date(Date.now() + 9 * 3600e3).toISOString().slice(5, 19), ...a);
 
 (async () => {
-  const browser = await chromium.launch({ args: ['--disable-blink-features=AutomationControlled'] });
+  // GitHub 실행기에 깔려 있는 크롬을 먼저 씀(내려받기 실패로 멈추지 않게). 없으면 Playwright 크로미움
+  const args = ['--disable-blink-features=AutomationControlled'];
+  let browser; try { browser = await chromium.launch({ channel: 'chrome', args }); log('browser: chrome'); } catch (e) { browser = await chromium.launch({ args }); log('browser: chromium'); }
   const ctx = await browser.newContext({ locale: 'ko-KR', timezoneId: 'Asia/Seoul',
     userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36' });
 
